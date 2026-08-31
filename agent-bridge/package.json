@@ -1,0 +1,22 @@
+{
+  "name": "dsh-agent-bridge",
+  "version": "0.1.0",
+  "description": "Bridge: let the DSH agent invoke other local coding agents (Claude Code / Codex / Tencent Marvis) as subprocesses from its own tools.",
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

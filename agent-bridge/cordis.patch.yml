@@ -1,0 +1,10 @@
+# dsh-agent-bridge bundle patch
+# 插件行按包名引用；profile 列出该 bundle 时应用本层。
+# 需要覆盖配置时，在 profile 的 cordis.patch.yml 中按 id 覆盖本行：
+#   - id: agent-bridge
+#     name: dsh-agent-bridge
+#     config:
+#       claudePermissionMode: bypassPermissions
+- insert:
+    - id: agent-bridge
+      name: dsh-agent-bridge

@@ -1,0 +1,4 @@
+# dsh-ghidra bundle patch
+- insert:
+    - id: ghidra-bridge
+      name: dsh-ghidra

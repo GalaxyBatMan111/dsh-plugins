@@ -1,0 +1,11 @@
+{
+  "name": "dsh-ghidra",
+  "version": "0.1.0",
+  "description": "Ghidra bridge: import binaries and operate on decompiled output via a persistent PyGhidra server.",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "lib", "scripts", "cordis.patch.yml", "README.md"],
+  "engines": { "node": ">=20" },
+  "license": "MIT",
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+}
