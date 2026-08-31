@@ -1,0 +1,4 @@
+# dsh-forensics bundle patch
+- insert:
+    - id: forensics-bridge
+      name: dsh-forensics

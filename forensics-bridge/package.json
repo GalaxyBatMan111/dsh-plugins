@@ -1,0 +1,11 @@
+{
+  "name": "dsh-forensics",
+  "version": "0.1.0",
+  "description": "Forensics toolkit: radare2/RetDec reverse engineering, tshark/mitmproxy packet capture, trafilatura/crawl4ai web scraping, single-file/monolith webpage cloning.",
+  "type": "module",
+  "main": "index.js",
+  "files": ["index.js", "lib", "scripts", "cordis.patch.yml", "README.md"],
+  "engines": { "node": ">=20" },
+  "license": "MIT",
+  "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
+}
