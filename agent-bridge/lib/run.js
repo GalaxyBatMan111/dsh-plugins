@@ -24,12 +24,12 @@ export function makeSpawnArgs(cmd, args) {
   return { command: cmd, args, options: {} }
 }
 
-export function runProcess(cmd, args, { cwd, timeoutMs, signal, maxOutputChars = 100000 }) {
+export function runProcess(cmd, args, { cwd, timeoutMs, signal, maxOutputChars = 100000, env }) {
   return new Promise((resolve, reject) => {
     const { command, args: cargs, options } = makeSpawnArgs(cmd, args)
     let child
     try {
-      child = spawn(command, cargs, { cwd, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], env: process.env, ...options })
+      child = spawn(command, cargs, { cwd, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], env: env || process.env, ...options })
     } catch (err) {
       reject(err)
       return

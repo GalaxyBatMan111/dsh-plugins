@@ -114,3 +114,49 @@ call_agent / agent_status 工具。
             ├── claude.js     # claude -p --output-format json
             ├── codex.js      # codex exec --json [--full-auto]
             └── marvis.js     # MarvisAgent 服务器生命周期 + /health
+## 跨机器部署（新电脑安装指南）
+
+插件在新电脑上会自动适配，按下面顺序操作即可：
+
+### 1. 安装 Claude Code
+
+    npm install -g @anthropic-ai/claude-code
+    claude                      # 首次运行完成登录
+
+> 用 cc-switch 等工具切换第三方端点（如 DeepSeek Anthropic 兼容 API）也一样：
+> 只要 claude 命令本身能跑（claude --version 有输出），插件就能用。
+
+### 2. 安装插件（三选一）
+
+    # 本地目录
+    & "$env:APPDATA\DSH Desktop\host-commands\desktop\bin\dsh.cmd" plugin --profile desktop add .\agent-bridge
+    # 或从 GitHub 克隆 dsh-plugins 仓库后 add 子目录
+    # 或未来发布到 npm 后按包名安装
+
+重启 DSH Desktop。
+
+### 3. 验证
+
+让 DSH 跑一次 agent_status，确认 claude 被探测到（自动探测顺序：
+配置 claudeBin > PATH > npm 全局目录 > ~/.local/bin 等常见位置）。
+
+### 自动适配能力（无需配置）
+
+- claude/codex 二进制自动探测（PATH + 常见安装位置 + npm prefix）
+- Claude 的 API 端点自动读取（~/.claude/settings.json 的 ANTHROPIC_BASE_URL）
+- **API 预检**：任务开始前快速探测端点可达性，不可达立即返回明确错误
+  （含代理建议），不会让 claude 内部反复重试浪费时间
+- **网络错误自动重试**：TRANSPORT/连接类失败自动重试一次（可配 retryOnNetworkError）
+- **系统代理自动发现**：git 全局代理 / HTTPS_PROXY 环境变量，自动注入子进程
+- **进度文本消毒**：注入会话的内容会清除 ANSI 控制字符与非法编码，
+  不会再写坏会话历史（曾因此导致 DSH 会话文件校验失败）
+
+### 新电脑常见问题
+
+| 现象 | 处理 |
+| --- | --- |
+| agent_status 显示 claude 未找到 | npm install -g @anthropic-ai/claude-code 后重开 DSH |
+| call_agent 报 API 端点不可达 | 检查网络；DSH 插件配置设 proxyUrl: "http://127.0.0.1:端口" |
+| claude 提示未登录 | 先手动跑一次 claude 完成登录/信任 |
+| 权限模式太严/太松 | 配置 claudePermissionMode: acceptEdits（默认）/ bypassPermissions |
+

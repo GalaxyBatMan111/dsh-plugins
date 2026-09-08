@@ -38,7 +38,31 @@ export function versionOf(bin, args = ['--version']) {
 export function detectClaude(config) {
   if (config.claudeBin) return { path: config.claudeBin, source: 'config' }
   const p = findOnPath('claude')
-  return p ? { path: p, source: 'path' } : null
+  if (p) return { path: p, source: 'path' }
+  // 陌生机器兜底：npm 全局目录 / 用户本地 bin 的常见安装位置
+  const home = process.env.USERPROFILE || process.env.HOME || ''
+  const candidates = [
+    join(home, 'AppData', 'Roaming', 'npm', 'claude.cmd'),
+    join(home, 'AppData', 'Roaming', 'npm', 'claude.exe'),
+    join(home, '.local', 'bin', 'claude.cmd'),
+    join(home, '.local', 'bin', 'claude'),
+    join(home, '.local', 'bin', 'claude.exe'),
+    'C:\\Program Files\\nodejs\\claude.cmd',
+  ]
+  for (const c of candidates) {
+    try { if (existsSync(c)) return { path: c, source: 'scan' } } catch { /* ignore */ }
+  }
+  // npm prefix 兜底
+  try {
+    const r = spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['prefix', '-g'], { encoding: 'utf8', timeout: 15000, windowsHide: true })
+    if (r.status === 0 && r.stdout) {
+      const base = r.stdout.trim()
+      const ext = process.platform === 'win32' ? '.cmd' : ''
+      const c = join(base, 'claude' + ext)
+      try { if (existsSync(c)) return { path: c, source: 'npm-prefix' } } catch { /* ignore */ }
+    }
+  } catch { /* ignore */ }
+  return null
 }
 
 export function detectCodex(config) {

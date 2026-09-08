@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process'
 import { makeSpawnArgs, killPid } from './run.js'
 import { parseClaudeOutput } from './adapters/claude.js'
 import { parseCodexOutput } from './adapters/codex.js'
+import { sanitizeText } from './robust.js'
 
 export class AgentRun {
   constructor({ target, bin, args, cwd, timeoutMs, agent, progressInjectMs = 15000, maxOutputChars = 100000 }) {
@@ -45,11 +46,12 @@ export class AgentRun {
     if (agent && progressInjectMs > 0) {
       this.injectTimer = setInterval(() => {
         try {
-          const tail = this.buffer.slice(-300).trim()
+          const tail = sanitizeText(this.buffer.slice(-300))
           if (!tail) return
           const secs = Math.round((Date.now() - this.startedAt) / 1000)
+          // content 必须是 ContentBlock 数组且文本已消毒（防控制字符/编码问题写坏会话）
           agent.inject({
-            content: '[agent-bridge] ' + this.target + ' 运行中 ' + secs + 's：' + tail,
+            content: [{ type: 'text', text: '[agent-bridge] ' + this.target + ' 运行中 ' + secs + 's：' + tail }],
             source: { kind: 'plugin', plugin: 'agent-bridge' },
           })
         } catch { /* agent 可能已 dispose，忽略 */ }

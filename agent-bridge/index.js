@@ -35,6 +35,15 @@ export const Config = Schema.object({
   claudeDisallowedTools: Schema.array(Schema.string()).default([]),
   // Codex 自动批准
   codexFullAuto: Schema.boolean().default(true),
+  // 稳健性：网络错误自动重试次数（claude 连接 API 失败时）
+  retryOnNetworkError: Schema.number().default(1),
+  // API 预检超时（毫秒）；false 表示跳过预检
+  apiProbeTimeoutMs: Schema.number().default(5000),
+  skipApiProbe: Schema.boolean().default(false),
+  // claude 的 API 端点（留空自动从 ~/.claude/settings.json 读取）
+  claudeBaseUrl: Schema.string().default(''),
+  // 显式代理（如 http://127.0.0.1:7897）；留空自动发现（git 代理/环境变量）
+  proxyUrl: Schema.string().default(''),
 })
 
 const callOutputSchema = {
