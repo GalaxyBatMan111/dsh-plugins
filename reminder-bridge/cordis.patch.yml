@@ -1,0 +1,21 @@
+# dsh-reminder bundle patch
+# 提醒插件：任务需要用户决定/辅助时（ask_user_question / 审批），
+# 检测前台窗口是否在看剧/玩游戏，用声音 / 弹窗 / 黑白屏幕闪烁提醒。
+#
+# 全量配置示例（在 profile 的 cordis.patch.yml 覆盖本行即可）：
+#   - id: reminder-bridge
+#     name: dsh-reminder
+#     config:
+#       position: top          # top | top-right | top-left | bottom-right | bottom-left | center
+#       mode: auto             # auto | manual
+#       manualModes: [sound, popup]
+#       flashOpacity: 0.35     # 0.05~0.9 闪烁强度
+#       flashRounds: 2         # 1~6 闪烁轮数
+#       flashPulseMs: 300      # 50~800 单色时长(ms)
+#       flashGapMs: 400        # 100~1500 轮间隔(ms)
+#       checkMs: 30000
+#       maxActiveMs: 600000
+#       enabled: true
+- insert:
+    - id: reminder-bridge
+      name: dsh-reminder
