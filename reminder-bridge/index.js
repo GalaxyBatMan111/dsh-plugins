@@ -327,12 +327,14 @@ export function apply(ctx, config) {
       return
     }
     const fg = await getForeground()
+    if (state === null) return // stopReminder 可能在 await 期间把 state 置空
     if (fg === null) return
     const kind = kindOf(fg)
     console.log('[reminder] fg=' + fg.process + ' | ' + fg.title + ' -> ' + kind)
     if (kind === 'work') return // 已回工作窗口：待命不打扰，等工具完成
     const modes = decideModes(kind)
     await dispatch(modes)
+    if (state === null) return // dispatch 期间工具可能已完成并触发 stopReminder
     state.count = (state.count || 0) + 1
     console.log('[reminder] reminded #' + state.count + ' via ' + modes.join('+') + ' (' + kind + ')')
   }
@@ -341,8 +343,9 @@ export function apply(ctx, config) {
     if (state !== null) return
     console.log('[reminder] START: ' + reason)
     state = { reason, startedAt: Date.now(), active: true, timer: null, count: 0 }
-    ctx.timeout(() => void tick(), firstMs)
-    state.timer = ctx.interval(() => void tick(), checkMs)
+    const safeTick = () => { tick().catch((err) => console.error('[reminder] tick failed: ' + err)) }
+    ctx.timeout(safeTick, firstMs)
+    state.timer = ctx.interval(safeTick, checkMs)
   }
 
   const stopReminder = (reason) => {

@@ -1,0 +1,4 @@
+# dsh-wxapkg bundle patch
+- insert:
+    - id: wxapkg-bridge
+      name: dsh-wxapkg
